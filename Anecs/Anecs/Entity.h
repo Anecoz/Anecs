@@ -28,14 +28,14 @@ namespace Anecs {
 
   private:
     std::bitset<Component::MAX_COMPONENTS> _attachedComponents;
-    std::array<Component*, Component::MAX_COMPONENTS> _components;
+    std::array<std::shared_ptr<Component>, Component::MAX_COMPONENTS> _components;
   };
 
   template <class T>
   void Entity::addComponent(const std::shared_ptr<Component> component)
   {
     auto id = ComponentUtils::getUniqueId<T>();
-    _components[id] = component.get();
+    _components[id] = component;
     _attachedComponents[id] = true;
   }
 

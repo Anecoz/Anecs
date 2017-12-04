@@ -27,7 +27,7 @@ namespace Anecs {
     template <class T>
     bool hasComponent() const;
 
-    std::vector<ComponentID> getAttachedComponents();
+    std::vector<ComponentID>& getAttachedComponents();
 
   private:
     std::bitset<Component::MAX_COMPONENTS> _attachedComponents;

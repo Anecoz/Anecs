@@ -15,16 +15,14 @@ namespace Anecs {
   {
     _entities.push_back(entity);
 
-    auto attached = entity->getAttachedComponents();
-
-    for (auto& id : attached)
+    for (auto& id : entity->getAttachedComponents())
     {
       if (_sortedEntities.find(id) == _sortedEntities.end())
       {
-        _sortedEntities[id] = new std::vector<std::shared_ptr<Entity>>();
+        _sortedEntities[id] = EntityContainer(new std::vector<std::shared_ptr<Entity>>());
       }
 
-      _sortedEntities[id]->push_back(entity);   
+      _sortedEntities[id]->push_back(entity);
     }
   }
 

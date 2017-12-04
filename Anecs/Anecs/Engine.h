@@ -16,6 +16,8 @@ namespace Anecs {
   class Engine
   {
   public:
+    typedef std::shared_ptr<std::vector<std::shared_ptr<Entity>>> EntityContainer;
+
     Engine();
     ~Engine();
 
@@ -25,17 +27,17 @@ namespace Anecs {
     template <typename T>
     std::vector<std::shared_ptr<Entity>> getEntitesWithComponent1() const;
     template <typename T>
-    std::vector<std::shared_ptr<Entity>>* getEntitesWithComponent2() const;
+    Engine::EntityContainer getEntitesWithComponent2() const;
 
   private:
     std::vector<std::shared_ptr<Entity>> _entities;
-    std::unordered_map<ComponentID, std::vector<std::shared_ptr<Entity>>*> _sortedEntities;
+
+    std::unordered_map<ComponentID, EntityContainer> _sortedEntities;
   };
 
   template <typename T>
   std::vector<std::shared_ptr<Entity>> Engine::getEntitesWithComponent1() const
   {
-    // FIRST SOLUTION
     std::vector<std::shared_ptr<Entity>> output;
     for (auto entity : _entities)
     {
@@ -45,11 +47,13 @@ namespace Anecs {
   }
 
   template <typename T>
-  std::vector<std::shared_ptr<Entity>>* Engine::getEntitesWithComponent2() const
+  Engine::EntityContainer Engine::getEntitesWithComponent2() const
   {
-    // SECOND SOLUTION
     auto id = ComponentUtils::getUniqueId<T>();
-    if (_sortedEntities.find(id) == _sortedEntities.end()) return new std::vector<std::shared_ptr<Entity>>();
+    if (_sortedEntities.find(id) == _sortedEntities.end())
+    {
+      return EntityContainer(new std::vector<std::shared_ptr<Entity>>());
+    }
     return _sortedEntities.at(id);
   }
 }

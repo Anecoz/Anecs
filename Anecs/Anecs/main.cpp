@@ -26,12 +26,17 @@ int main()
 {
   // Test getting entities with certain component
   Anecs::Engine engine;
-  for (int i = 0; i < 10000000; i++)
+  auto t1Add = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < 100000; i++)
   {
     Anecs::Entity entity;
     entity.addComponent<TestComp>();
     engine.addEntity(std::shared_ptr<Anecs::Entity>(&entity));
   }
+  auto t2Add = std::chrono::high_resolution_clock::now();
+  auto durationAdd = std::chrono::duration_cast<std::chrono::microseconds>(t2Add - t1Add).count();
+
+  std::cout << "Adding entities to engine took " << durationAdd << " microseconds" << std::endl;
 
   auto t1First = std::chrono::high_resolution_clock::now();
   auto entities = engine.getEntitesWithComponent1<TestComp>();
@@ -53,7 +58,7 @@ int main()
   auto entitiesEmpty = engine.getEntitesWithComponent2<TestComp2>();
   auto entitesEmpty2 = engine.getEntitesWithComponent1<TestComp2>();
 
-  std::cout << "Entity list that should be empty are: " << entitiesEmpty->size() << ", and: " << entitesEmpty2.size() << std::endl;
+  std::cout << "Entity lists that should be empty are: " << entitiesEmpty->size() << ", and: " << entitesEmpty2.size() << std::endl;
 
   int i;
   std::cin >> i;

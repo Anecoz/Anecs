@@ -25,9 +25,4 @@ namespace Anecs {
       _sortedEntities[id]->push_back(entity);
     }
   }
-
-  void Engine::addEntityNoSort(std::shared_ptr<Entity> entity)
-  {
-    _entities.push_back(entity);
-  }
 }

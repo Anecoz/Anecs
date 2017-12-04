@@ -3,25 +3,45 @@
 
 #include "Engine.h"
 #include "Component.h"
+#include "System.h"
 #include "Entity.h"
 
 class TestComp : public Anecs::Component
 {
 public:
-  TestComp() :
-    Anecs::Component()
+  TestComp(int data) :
+    Anecs::Component(),
+    _data(data)
   {}
+
+  int _data;
 };
 
-class TestComp2 : public Anecs::Component
+class TestSystem : public Anecs::System
 {
 public:
-  TestComp2() :
-    Anecs::Component()
+  TestSystem() :
+    Anecs::System()
   {}
+
+  void update(const Anecs::Engine& engine) override
+  {
+    auto entities = engine.getEntitesWithComponent<TestComp>();
+
+    for (auto entity : *entities)
+    {
+      auto test = entity->getComponent<TestComp>();
+      TestComp* testcomp = (TestComp*)(test.get());
+      std::cout << "Test comp data is: " << std::to_string(testcomp->_data) << std::endl;
+    }
+  }
 };
 
-// Entry point for testing
+// Left todo:
+/*
+Need a System class
+Need some sort of internal loop in engine to call systems etc
+*/
 int main()
 {
   // Test getting entities with certain component
@@ -29,9 +49,9 @@ int main()
   auto t1Add = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < 100000; i++)
   {
-    Anecs::Entity entity;
-    entity.addComponent<TestComp>();
-    engine.addEntity(std::shared_ptr<Anecs::Entity>(&entity));
+    auto entity = std::shared_ptr<Anecs::Entity>(new Anecs::Entity());
+    entity->addComponent<TestComp>(i);
+    engine.addEntity(entity);
   }
   auto t2Add = std::chrono::high_resolution_clock::now();
   auto durationAdd = std::chrono::duration_cast<std::chrono::microseconds>(t2Add - t1Add).count();
@@ -44,13 +64,11 @@ int main()
   auto durationScnd = std::chrono::duration_cast<std::chrono::microseconds>(t2Scnd - t1Scnd).count();
 
   std::cout << "Entities with component 2 TestComp are: " << entitiesScnd->size() << std::endl;
-
   std::cout << "Second solution took: " << durationScnd << " microseconds" << std::endl;
 
-  // Sanity check
-  auto entitiesEmpty = engine.getEntitesWithComponent<TestComp2>();
-
-  std::cout << "Entity lists that should be empty are: " << entitiesEmpty->size() << std::endl;
+  std::unique_ptr<Anecs::System> testSystem(new TestSystem);
+  engine.addSystem(std::move(testSystem));
+  engine.start();
 
   int i;
   std::cin >> i;

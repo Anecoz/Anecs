@@ -13,7 +13,7 @@ namespace Anecs {
   {
   }
 
-  std::vector<ComponentID>& Entity::getAttachedComponents()
+  std::vector<ComponentID> Entity::getAttachedComponents()
   {
     std::vector<ComponentID> output;
 

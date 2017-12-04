@@ -2,6 +2,7 @@
 
 #include "ComponentUtils.h"
 
+#include <atomic>
 #include <vector>
 #include <memory>
 #include <unordered_map>
@@ -9,6 +10,7 @@
 namespace Anecs {
   class Component;
   class Entity;
+  class System;
 
   /*
   Handles entities, systems and components
@@ -21,14 +23,20 @@ namespace Anecs {
     Engine();
     ~Engine();
 
+    void start();
+    void stop();
+
     void addEntity(std::shared_ptr<Entity> entity);
+    void addSystem(std::unique_ptr<System> system);
 
     template <typename T>
     Engine::EntityContainer getEntitesWithComponent() const;
 
   private:
-    std::vector<std::shared_ptr<Entity>> _entities;
+    bool _running;
 
+    std::vector<std::unique_ptr<System>> _systems;
+    std::vector<std::shared_ptr<Entity>> _entities;
     std::unordered_map<ComponentID, EntityContainer> _sortedEntities;
   };
 

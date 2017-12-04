@@ -27,11 +27,14 @@ namespace Anecs {
     template <class T>
     bool hasComponent() const;
 
-    std::vector<ComponentID>& getAttachedComponents();
+    template <class T>
+    std::shared_ptr<Component> getComponent() const;
+
+    std::vector<ComponentID> getAttachedComponents();
 
   private:
     std::bitset<Component::MAX_COMPONENTS> _attachedComponents;
-    std::array<std::unique_ptr<Component>, Component::MAX_COMPONENTS> _components;
+    std::array<std::shared_ptr<Component>, Component::MAX_COMPONENTS> _components;
   };
 
   template <class T, typename... Args>
@@ -39,7 +42,7 @@ namespace Anecs {
   {
     // TODO here: handle if we already have a component of this type, right now it simply gets overridden
     static_assert(std::is_base_of<Component, T>::value, "Type T must inherit from Component!");
-    auto component = std::make_unique<T>(std::forward<Args>(args)...);
+    auto component = std::make_shared<T>(std::forward<Args>(args)...);
     auto id = ComponentUtils::getUniqueId<T>();
 
     _components[id] = std::move(component);
@@ -51,5 +54,17 @@ namespace Anecs {
   {
     auto id = ComponentUtils::getUniqueId<T>();
     return _attachedComponents[id];
+  }
+
+  template <class T>
+  std::shared_ptr<Component> Entity::getComponent() const
+  {
+    auto id = ComponentUtils::getUniqueId<T>();
+    if (_attachedComponents[id])
+    {
+      return _components[id];
+    }
+    
+    return std::shared_ptr<Component>();
   }
 }

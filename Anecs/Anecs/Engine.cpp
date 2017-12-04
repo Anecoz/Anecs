@@ -1,15 +1,35 @@
 #include "Engine.h"
 
+#include "System.h"
 #include "Component.h"
 #include "Entity.h"
 
 namespace Anecs {
 
   Engine::Engine()
+    : _running(false)
   {}
 
   Engine::~Engine()
   {}
+
+  void Engine::start()
+  {
+    _running = true;
+
+    while (_running)
+    {
+      for (auto& system : _systems)
+      {
+        system->update(*this);
+      }
+    }
+  }
+
+  void Engine::stop()
+  {
+
+  }
 
   void Engine::addEntity(std::shared_ptr<Entity> entity)
   {
@@ -21,8 +41,12 @@ namespace Anecs {
       {
         _sortedEntities[id] = EntityContainer(new std::vector<std::shared_ptr<Entity>>());
       }
-
       _sortedEntities[id]->push_back(entity);
     }
+  }
+
+  void Engine::addSystem(std::unique_ptr<System> system)
+  {
+    _systems.push_back(std::move(system));
   }
 }

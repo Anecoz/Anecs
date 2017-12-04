@@ -20,8 +20,8 @@ namespace Anecs {
     Entity();
     ~Entity();
 
-    template <class T>
-    void addComponent(const std::shared_ptr<Component> component);
+    template <class T, typename... Args>
+    void addComponent(Args &&... args);
     
     template <class T>
     bool hasComponent() const;
@@ -31,11 +31,13 @@ namespace Anecs {
     std::array<std::shared_ptr<Component>, Component::MAX_COMPONENTS> _components;
   };
 
-  template <class T>
-  void Entity::addComponent(const std::shared_ptr<Component> component)
+  template <class T, typename... Args>
+  void Entity::addComponent(Args &&... args)
   {
+    static_assert(std::is_base_of<Component, T>::value, "Type T must inherit from Component!");
+    auto component = std::make_unique<T>(std::forward<Args>(args)...);
     auto id = ComponentUtils::getUniqueId<T>();
-    _components[id] = component;
+    _components[id] = std::move(component);
     _attachedComponents[id] = true;
   }
 

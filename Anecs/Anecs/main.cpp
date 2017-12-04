@@ -22,13 +22,13 @@ public:
 int main()
 {
   Anecs::Entity entity;
-  entity.addComponent<TestComp>(std::make_shared<TestComp>(TestComp()));
+  entity.addComponent<TestComp>();
 
   std::cout << "has component TestComp: " << entity.hasComponent<TestComp>() << std::endl;
   std::cout << "has component TestComp2: " << entity.hasComponent<TestComp2>() << std::endl;
   
   std::cout << "Adding a TestComp2 component..." << std::endl;
-  entity.addComponent<TestComp2>(std::make_shared<TestComp2>(TestComp2()));
+  entity.addComponent<TestComp2>();
   std::cout << "has component TestComp2: " << entity.hasComponent<TestComp2>() << std::endl;
 
   int i;

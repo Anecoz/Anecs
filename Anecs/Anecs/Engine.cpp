@@ -17,31 +17,25 @@ namespace Anecs {
   {
     _running = true;
 
-    while (_running)
-    {
-      for (auto& system : _systems)
-      {
+    while (_running) {
+      for (auto& system : _systems) {
         system->update(*this);
       }
     }
   }
 
   void Engine::stop()
+  {}
+
+  void Engine::addEntity(std::unique_ptr<Entity> entity)
   {
+    std::shared_ptr<Entity> shared = std::move(entity);
 
-  }
-
-  void Engine::addEntity(std::shared_ptr<Entity> entity)
-  {
-    _entities.push_back(entity);
-
-    for (auto& id : entity->getAttachedComponents())
-    {
-      if (_sortedEntities.find(id) == _sortedEntities.end())
-      {
-        _sortedEntities[id] = EntityContainer(new std::vector<std::shared_ptr<Entity>>());
+    for (auto& id : shared->getAttachedComponents()) {
+      if (_sortedEntities.find(id) == _sortedEntities.end()) {
+        _sortedEntities[id] = std::make_shared<EntityContainer>();
       }
-      _sortedEntities[id]->push_back(entity);
+      _sortedEntities[id]->push_back(shared);
     }
   }
 

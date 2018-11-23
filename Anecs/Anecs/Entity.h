@@ -60,8 +60,7 @@ namespace Anecs {
   std::shared_ptr<Component> Entity::getComponent() const
   {
     auto id = ComponentUtils::getUniqueId<T>();
-    if (_attachedComponents[id])
-    {
+    if (_attachedComponents[id]) {
       return _components[id];
     }
     

@@ -28,7 +28,7 @@ namespace Anecs {
     bool hasComponent() const;
 
     template <class T>
-    std::shared_ptr<Component> getComponent() const;
+    T* getComponent() const;
 
     std::vector<ComponentID> getAttachedComponents();
 
@@ -57,11 +57,11 @@ namespace Anecs {
   }
 
   template <class T>
-  std::shared_ptr<Component> Entity::getComponent() const
+  T* Entity::getComponent() const
   {
     auto id = ComponentUtils::getUniqueId<T>();
     if (_attachedComponents[id]) {
-      return _components[id];
+      return dynamic_cast<T*>(_components[id].get());
     }
     
     return nullptr;

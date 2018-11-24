@@ -64,6 +64,6 @@ namespace Anecs {
       return _components[id];
     }
     
-    return std::shared_ptr<Component>();
+    return nullptr;
   }
 }

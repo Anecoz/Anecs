@@ -29,7 +29,6 @@ public:
 
     for (auto entity : *entities) {
       auto test = entity->getComponent<TestComp>();
-      TestComp* testcomp = dynamic_cast<TestComp*>(test.get());
     }
   }
 };

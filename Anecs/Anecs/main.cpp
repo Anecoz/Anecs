@@ -24,6 +24,7 @@ public:
 
   void update(const Anecs::Engine& engine) override
   {
+    std::cout << "TestSystem executing!" << std::endl;
     auto entities = engine.getEntitesWithComponent<TestComp>();
 
     for (auto entity : *entities) {
@@ -33,11 +34,19 @@ public:
   }
 };
 
-// Left todo:
-/*
-Need a System class
-Need some sort of internal loop in engine to call systems etc
-*/
+class TestSystem2 : public Anecs::System
+{
+public:
+  TestSystem2()
+    : Anecs::System()
+  {}
+
+  void update(const Anecs::Engine& engine) override
+  {
+    std::cout << "TestSystem2 executing!" << std::endl;
+  }
+};
+
 int main()
 {
   // Test getting entities with certain component
@@ -49,9 +58,9 @@ int main()
     engine.addEntity(std::move(entity));
   }
   auto t2Add = std::chrono::high_resolution_clock::now();
-  auto durationAdd = std::chrono::duration_cast<std::chrono::microseconds>(t2Add - t1Add).count();
+  auto durationAdd = std::chrono::duration_cast<std::chrono::milliseconds>(t2Add - t1Add).count();
 
-  std::cout << "Adding entities to engine took " << durationAdd << " microseconds" << std::endl;
+  std::cout << "Adding entities to engine took " << durationAdd << " milliseconds" << std::endl;
 
   auto t1Scnd = std::chrono::high_resolution_clock::now();
   auto entitiesScnd = engine.getEntitesWithComponent<TestComp>();
@@ -61,11 +70,10 @@ int main()
   std::cout << "Entities with component TestComp are: " << entitiesScnd->size() << std::endl;
   std::cout << "Fetching entities with a specific component took: " << durationScnd << " microseconds" << std::endl;
 
-  std::unique_ptr<Anecs::System> testSystem(new TestSystem);
+  std::unique_ptr<Anecs::System> testSystem(new TestSystem());
+  std::unique_ptr<Anecs::System> testSystem2(new TestSystem2());
   engine.addSystem(std::move(testSystem));
+  engine.addSystem(std::move(testSystem2), -1);
   engine.start();
-
-  int i;
-  std::cin >> i;
 }
 

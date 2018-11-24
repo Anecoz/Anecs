@@ -27,15 +27,26 @@ namespace Anecs {
     void stop();
 
     void addEntity(std::unique_ptr<Entity> entity);
-    void addSystem(std::unique_ptr<System> system);
+    void addSystem(std::unique_ptr<System> system, int priority = 0);
 
     template <typename T>
     std::shared_ptr<Engine::EntityContainer> getEntitesWithComponent() const;
 
   private:
+    struct PrioritizedSystem
+    {
+      PrioritizedSystem(int priority, std::unique_ptr<System>&& system)
+        : _priority(priority)
+        , _system(std::move(system))
+      {}
+
+      int _priority;
+      std::unique_ptr<System> _system;
+    };
+
     bool _running;
 
-    std::vector<std::unique_ptr<System>> _systems;
+    std::vector<PrioritizedSystem> _systems;
     std::unordered_map<ComponentID, std::shared_ptr<EntityContainer>> _sortedEntities;
   };
 

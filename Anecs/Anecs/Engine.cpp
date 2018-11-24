@@ -4,6 +4,8 @@
 #include "Component.h"
 #include "Entity.h"
 
+#include <algorithm>
+
 namespace Anecs {
 
   Engine::Engine()
@@ -19,7 +21,7 @@ namespace Anecs {
 
     while (_running) {
       for (auto& system : _systems) {
-        system->update(*this);
+        system._system->update(*this);
       }
     }
   }
@@ -39,8 +41,12 @@ namespace Anecs {
     }
   }
 
-  void Engine::addSystem(std::unique_ptr<System> system)
+  void Engine::addSystem(std::unique_ptr<System> system, int priority)
   {
-    _systems.push_back(std::move(system));
+    _systems.emplace_back(priority, std::move(system));
+
+    std::sort(_systems.begin(), _systems.end(), [](const PrioritizedSystem& system1, const PrioritizedSystem& system2) {
+      return system1._priority < system2._priority;
+    });
   }
 }
